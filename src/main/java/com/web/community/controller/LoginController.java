@@ -21,6 +21,12 @@ public class LoginController {
         return "login";
     }
 
+
+    @GetMapping("/login/kakao")
+    public String loginKakao() {
+        return "login";
+    }
+
     @GetMapping("/kakao/complete")
     public String loginComplete(HttpSession session, @SocialUser User user) {
 

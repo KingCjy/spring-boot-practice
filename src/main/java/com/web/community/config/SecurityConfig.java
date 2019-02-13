@@ -23,9 +23,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.CompositeFilter;
+import sun.nio.ch.IOUtil;
 
 import javax.servlet.Filter;
+import java.io.DataInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -43,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CharacterEncodingFilter filter = new CharacterEncodingFilter();
 
         http
-                .authorizeRequests().antMatchers("/").permitAll()
+                .authorizeRequests()
                 .anyRequest().permitAll()
                 .and()
                 .headers().frameOptions().disable()
@@ -76,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private Filter oauth2Filter() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filterList = new ArrayList<>();
-        filterList.add(oauth2Filter(kakao(), "/login/kakao", SocialType.KAKAO));
+//        filterList.add(oauth2Filter(kakao(), "/login/kakao", SocialType.KAKAO));
 
         filter.setFilters(filterList);
         return filter;
@@ -86,18 +89,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
         OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(clientResources.getClient(), oAuth2ClientContext);
         filter.setRestTemplate(oAuth2RestTemplate);;
+
+
         filter.setTokenServices(new UserTokenService(clientResources, socialType));
         filter.setAuthenticationSuccessHandler((request, response, authentication) -> {
             response.sendRedirect("/" + socialType.getValue() + "/complete");
         });
         filter.setAuthenticationFailureHandler((request, response, exception) -> {
-            exception.printStackTrace();
-            System.out.println(exception.getMessage());
 
-            System.out.println(request.getServletPath());
-            System.out.println(request.getContextPath());
-            System.out.println(request.getParameterMap().toString());
-            System.out.println(request.getMethod());
+
+
+            DataInputStream dis = new DataInputStream(request.getInputStream());
+            System.out.println(dis.readUTF());
+            System.out.println(response.getStatus());
+            request.getParameterMap().forEach((k, v) -> {
+                System.out.println(k + ": " + Arrays.toString(v)
+                );
+            });
+
+            exception.printStackTrace();
             response.sendRedirect("/error");
         });
         return filter;
