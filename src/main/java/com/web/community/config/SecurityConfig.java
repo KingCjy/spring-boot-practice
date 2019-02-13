@@ -91,6 +91,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             response.sendRedirect("/" + socialType.getValue() + "/complete");
         });
         filter.setAuthenticationFailureHandler((request, response, exception) -> {
+            exception.printStackTrace();
+            System.out.println(exception.getMessage());
+
+            System.out.println(request.getServletPath());
+            System.out.println(request.getContextPath());
+            System.out.println(request.getParameterMap().toString());
+            System.out.println(request.getMethod());
             response.sendRedirect("/error");
         });
         return filter;

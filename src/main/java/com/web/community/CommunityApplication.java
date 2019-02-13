@@ -1,5 +1,6 @@
 package com.web.community;
 
+import com.web.community.filter.HttpLoggingFilter;
 import com.web.community.repository.BoardRepository;
 import com.web.community.repository.UserRepository;
 import com.web.community.resolver.UserArgumentResolver;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,11 +23,21 @@ public class CommunityApplication implements WebMvcConfigurer {
     }
 
     @Autowired
+    private HttpLoggingFilter httpLoggingFilter;
+
+    @Autowired
     private UserArgumentResolver userArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userArgumentResolver);
+    }
+    @Bean
+    public FilterRegistrationBean myFilter() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(httpLoggingFilter);
+        registration.addUrlPatterns("*");
+        return registration;
     }
 
 //    @Bean
