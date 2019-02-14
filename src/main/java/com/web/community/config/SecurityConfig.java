@@ -44,10 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CharacterEncodingFilter filter = new CharacterEncodingFilter();
-
         http
                 .authorizeRequests()
-                .anyRequest().permitAll()
+                .antMatchers("/", "/login/**",  "/css/**", "/images/**", "/js/**", "/console/**").permitAll()
+                .antMatchers("/kakao").hasAuthority(SocialType.KAKAO.getRoleType())
+                .anyRequest().authenticated()
                 .and()
                 .headers().frameOptions().disable()
                 .and()
@@ -70,46 +71,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-        filterRegistrationBean.setFilter(filter);
-        filterRegistrationBean.setOrder(-100);
-        return filterRegistrationBean;
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(filter);
+        registration.setOrder(-100);
+        return registration;
     }
 
     private Filter oauth2Filter() {
         CompositeFilter filter = new CompositeFilter();
-        List<Filter> filterList = new ArrayList<>();
-//        filterList.add(oauth2Filter(kakao(), "/login/kakao", SocialType.KAKAO));
-
-        filter.setFilters(filterList);
+        List<Filter> filters = new ArrayList<>();
+        filters.add(oauth2Filter(kakao(), "/login/kakao", SocialType.KAKAO));
+        filter.setFilters(filters);
         return filter;
     }
 
-    private Filter oauth2Filter(ClientResources clientResources, String path, SocialType socialType) {
+    private Filter oauth2Filter(ClientResources client, String path, SocialType socialType) {
         OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
-        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(clientResources.getClient(), oAuth2ClientContext);
-        filter.setRestTemplate(oAuth2RestTemplate);;
+        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oAuth2ClientContext);
 
-
-        filter.setTokenServices(new UserTokenService(clientResources, socialType));
-        filter.setAuthenticationSuccessHandler((request, response, authentication) -> {
-            response.sendRedirect("/" + socialType.getValue() + "/complete");
-        });
-        filter.setAuthenticationFailureHandler((request, response, exception) -> {
-
-
-
-            DataInputStream dis = new DataInputStream(request.getInputStream());
-            System.out.println(dis.readUTF());
-            System.out.println(response.getStatus());
-            request.getParameterMap().forEach((k, v) -> {
-                System.out.println(k + ": " + Arrays.toString(v)
-                );
-            });
-
-            exception.printStackTrace();
-            response.sendRedirect("/error");
-        });
+        filter.setRestTemplate(template);
+        filter.setTokenServices(new UserTokenService(client, socialType));
+        filter.setAuthenticationSuccessHandler((request, response, authentication) -> response.sendRedirect("/" + socialType.getValue() + "/complete"));
+        filter.setAuthenticationFailureHandler((request, response, exception) -> response.sendRedirect("/error"));
         return filter;
     }
 
