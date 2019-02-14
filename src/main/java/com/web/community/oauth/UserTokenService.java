@@ -10,13 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 public class UserTokenService extends UserInfoTokenServices {
-    public UserTokenService(ClientResources resources, SocialType socialType) {
-        super(resources.getResource().getUserInfoUri(), resources.getClient().getClientId());
+    public UserTokenService(ClientResources clientResources, SocialType socialType) {
+        super(clientResources.getResource().getUserInfoUri(), clientResources.getClient().getClientId());
         setAuthoritiesExtractor(new OAuth2AuthoritiesExtractor(socialType));
     }
 
     public static class OAuth2AuthoritiesExtractor implements AuthoritiesExtractor {
-
         private String socialType;
 
         public OAuth2AuthoritiesExtractor(SocialType socialType) {
@@ -28,6 +27,4 @@ public class UserTokenService extends UserInfoTokenServices {
             return AuthorityUtils.createAuthorityList(this.socialType);
         }
     }
-
-
 }
