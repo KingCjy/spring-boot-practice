@@ -34,6 +34,7 @@ public class HttpLoggingFilter implements Filter {
                     httpServletResponse);
             chain.doFilter(bufferedRequest, bufferedResponse);
 
+            logger.info(request.getContentType());
             logger.info("#============================================================#");
             logger.info("# API Path: " + httpServletRequest.getServletPath());
             logger.info("# API Remote Address: " + httpServletRequest.getRemoteAddr());
