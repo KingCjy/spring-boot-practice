@@ -1,6 +1,9 @@
 package com.web.community;
 
 import com.web.community.config.RestTemplateLoggingRequestInterceptor;
+import com.web.community.domain.Board;
+import com.web.community.domain.BoardType;
+import com.web.community.domain.User;
 import com.web.community.filter.HttpLoggingFilter;
 import com.web.community.repository.BoardRepository;
 import com.web.community.repository.UserRepository;
@@ -16,8 +19,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @SpringBootApplication
 public class CommunityApplication implements WebMvcConfigurer {
@@ -39,6 +44,7 @@ public class CommunityApplication implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userArgumentResolver);
     }
+
     @Bean
     public FilterRegistrationBean myFilter() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -48,21 +54,36 @@ public class CommunityApplication implements WebMvcConfigurer {
     }
 
     @Bean
-    public RestTemplate restTemplate()
-    {
+    public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
 
 
-        restTemplate.setInterceptors( Collections.singletonList(restTemplateLoggingRequestInterceptor) );
+        restTemplate.setInterceptors(Collections.singletonList(restTemplateLoggingRequestInterceptor));
 
         return restTemplate;
     }
-//    @Bean
-//    public CommandLineRunner runner(UserRepository userRepository, BoardRepository boardRepository) throw Exception {
-//        return (args) -> {
 //
-//        }
+//    @Bean
+//    public CommandLineRunner runner(UserRepository userRepository, BoardRepository boardRepository) {
+//        return (args) -> {
+//            User user = userRepository.save(User.builder()
+//                    .name("havi")
+//                    .password("test")
+//                    .email("havi@gmail.com")
+//                    .createdDate(LocalDateTime.now())
+//                    .build());
+//
+//            IntStream.rangeClosed(1, 200).forEach(index ->
+//                    boardRepository.save(Board.builder()
+//                            .title("게시글" + index)
+//                            .subTitle("순서" + index)
+//                            .content("컨텐츠")
+//                            .boardType(BoardType.FREE)
+//                            .createdDate(LocalDateTime.now())
+//                            .updatedDate(LocalDateTime.now())
+//                            .user(user).build())
+//            );
+//        };
 //    }
-
 }
 

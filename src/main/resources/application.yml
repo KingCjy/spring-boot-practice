@@ -6,3 +6,10 @@ kakao:
   resource:
     userInfoUri: https://kauth.kakao.com/v2/user/me
 
+
+spring:
+  data:
+    rest:
+      base-path: /api
+      default-page-size: 10
+      max-page-size: 10

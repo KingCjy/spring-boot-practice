@@ -1,15 +1,17 @@
 package com.web.community.domain;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table
-@Builder
+@NoArgsConstructor
 public class Board implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,67 +30,26 @@ public class Board implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
+    @Builder
+    public Board(String title, String subTitle, String content, BoardType boardType, LocalDateTime createdDate, LocalDateTime updatedDate, User user) {
         this.title = title;
-    }
-
-    public String getSubTitle() {
-        return subTitle;
-    }
-
-    public void setSubTitle(String subTitle) {
         this.subTitle = subTitle;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
         this.content = content;
-    }
-
-    public BoardType getBoardType() {
-        return boardType;
-    }
-
-    public void setBoardType(BoardType boardType) {
         this.boardType = boardType;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(LocalDateTime updatedDate) {
         this.updatedDate = updatedDate;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setCreatedDateNow() {
+        this.createdDate = LocalDateTime.now();
+    }
+
+    public void update(Board board) {
+        this.title = board.title;
+        this.subTitle = board.subTitle;
+        this.content = board.content;
+        this.boardType = board.boardType;
+        this.updatedDate = LocalDateTime.now();
     }
 }

@@ -23,8 +23,8 @@
                 <div class="pull-left">
                     <select class="form-control input-sm" id="board_type">
                         <option>--분류--</option>
-                        <option th:value="notice" th:selected="${board?.boardType?.name() == 'notice'}">공지사항</option>
-                        <option th:value="free" th:selected="${board?.boardType?.name() == 'free'}">자유게시판</option>
+                        <option th:value="NOTICE" th:selected="${board?.boardType?.name() == 'NOTICE'}">공지사항</option>
+                        <option th:value="FREE" th:selected="${board?.boardType?.name() == 'FREE'}">자유게시판</option>
                     </select>
                 </div>
             </td>
@@ -74,7 +74,7 @@
             boardType: $('#board_type option:selected').val()
         });
         $.ajax({
-            url: "http://localhost:8081/api/boards",
+            url: "/api/boards",
             type: "POST",
             data: jsonData,
             contentType: "application/json",
@@ -102,7 +102,7 @@
             createdDate: $('#board_create_date').val()
         });
         $.ajax({
-            url: "http://localhost:8081/api/boards/" + $('#board_idx').val(),
+            url: "/api/boards/" + $('#board_idx').val(),
             type: "PUT",
             data: jsonData,
             contentType: "application/json",
@@ -118,7 +118,7 @@
     });
     $('#delete').click(function () {
         $.ajax({
-            url: "http://localhost:8081/api/boards/" + $('#board_idx').val(),
+            url: "/api/boards/" + $('#board_idx').val(),
             type: "DELETE",
             success: function () {
                 alert('삭제 성공!');
